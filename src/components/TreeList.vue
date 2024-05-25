@@ -19,7 +19,7 @@
             @click="selectItem(item)"
             @dblclick="expandItem(item)"
         >
-          {{ item.name }}
+          {{ item.name }}, {{item.id}}
         </div>
       </div>
       <TreeList

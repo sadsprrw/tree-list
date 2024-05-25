@@ -16,6 +16,7 @@ export interface ItemsListResponse {
 export interface TreeListItem {
     id: string;
     name: string;
+    parentId: string,
     children: TreeListItem[];
     treeCollapsed: boolean;
 }

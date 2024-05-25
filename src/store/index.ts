@@ -22,6 +22,7 @@ export default createStore<State>({
         selectedItemsList: [],
         selectedItem: {
             id: '',
+            parentId: '',
             name: '',
             children: [],
             treeCollapsed: false
@@ -30,13 +31,18 @@ export default createStore<State>({
     getters: {},
     mutations: {
         setLoading (state: State, value: boolean) {
-          state.loading = value;
+            state.loading = value;
         },
         setTreeList (state: State, tree: TreeListItem[]) {
             state.treeList = tree;
         },
         setSelectedItem (state: State, item: TreeListItem) {
             state.selectedItem = item;
+            localStorage.setItem('selectedItemId', item.id);
+        },
+        setSelectedItemsList (state: State, list: ListItem[]) {
+            state.selectedItemsList = list;
+            localStorage.setItem('selectedItemsList', JSON.stringify(state.selectedItemsList));
         },
         addSelectedItem (state: State, item: TreeListItem) {
             if (!state.selectedItemsList.find(i => i.id === item.id)) {
@@ -44,22 +50,31 @@ export default createStore<State>({
                     id: item.id,
                     name: item.name
                 });
+                localStorage.setItem('selectedItemsList', JSON.stringify(state.selectedItemsList));
             }
         }
     },
     actions: {
-        async getItemsList ({ commit }) {
+        async getItemsList ({ commit, dispatch, state }, payload) {
             commit('setLoading', true);
+            const { selectedItemId } = payload;
 
             const items: ItemsListResponse = await itemsList.getItemsList();
             const resultTree: TreeListItem[] = processTreeList(items);
 
             if (resultTree.length) {
-                resultTree[0].treeCollapsed = false;
-                commit('setSelectedItem', resultTree[0]);
                 commit('setTreeList', resultTree);
+                if (selectedItemId) {
+                    const element = await dispatch('findTreeElements', {id: selectedItemId, branch: state.treeList});
+                    if (element) {
+                        await dispatch('expandTreeToItem', {item: element});
+                        commit('setSelectedItem', element);
+                    }
+                } else {
+                    resultTree[0].treeCollapsed = false;
+                    commit('setSelectedItem', resultTree[0]);
+                }
             }
-
             commit('setLoading', false);
         },
         async findTreeElements ({ dispatch }, payload) {
@@ -77,29 +92,15 @@ export default createStore<State>({
             }
             return null;
         },
-        async replaceTreeElements ({ dispatch }, payload) {
-            const { id, branch, replaceItem } = payload;
-            for (let i = 0; i < branch.length; i++) {
-                if (branch[i].id === id) {
-                    branch[i] = replaceItem;
-                    return true;
-                }
-                if (branch[i].children) {
-                    const isReplaced = await dispatch('replaceTreeElements', { id, branch: branch[i].children, replaceItem });
-                    if (isReplaced) {
-                        return true;
-                    }
+        async expandTreeToItem({ dispatch, state }, payload) {
+            const { item } = payload;
+            if (item) {
+                item.treeCollapsed = false;
+                if (item?.parentId && item.parentId != "0") {
+                    const element = await dispatch('findTreeElements', { id: item.parentId, branch: state.treeList });
+                    if (element) await dispatch('expandTreeToItem', { item: element });
                 }
             }
-            return false;
-        },
-        async updateTreeElement ({ dispatch, state }, payload) {
-            const { id, attributes } = payload;
-            const item = await dispatch('findTreeElements', { id, branch: state.treeList });
-            let newItem;
-            if (item) newItem = { ...item, ...attributes };
-
-            await dispatch('replaceTreeElements', { id, branch: state.treeList, replaceItem: newItem });
         },
         async updateFullBranch ({ dispatch, state }, { item, value }) {
             if (item) {

@@ -12,7 +12,10 @@
         <TreeList :items-data="treeList"/>
       </div>
       <div class="panel__right-side">
-        <div class="list--header">Selected items:</div>
+        <div class="list--header">
+          Selected items:
+          <div class="tree-actions--item" @click="clearSelectedList">Clear</div>
+        </div>
         <ItemsList :items="selectedItemsList" />
       </div>
     </div>
@@ -35,7 +38,21 @@ export default defineComponent({
     const treeList = computed(() => store.state.treeList);
     const selectedItemsList = computed(() => store.state.selectedItemsList);
 
-    onMounted(() => store.dispatch('getItemsList'));
+    onMounted(() => {
+      const selectedItemId = localStorage.getItem('selectedItemId');
+      const savedList = localStorage.getItem('selectedItemsList');
+
+      if (savedList) {
+        try {
+          const parsedList = JSON.parse(savedList);
+          store.commit('setSelectedItemsList', parsedList);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      store.dispatch('getItemsList', { selectedItemId });
+    });
 
     async function expand() {
       await store.dispatch('updateFullBranch', { item: store.state.selectedItem, value: false });
@@ -45,7 +62,11 @@ export default defineComponent({
       await store.dispatch('updateFullBranch', { item: store.state.selectedItem, value: true });
     }
 
-    return { loading, treeList, selectedItemsList, expand, collapse };
+    function clearSelectedList() {
+      store.commit('setSelectedItemsList', []);
+    }
+
+    return { loading, treeList, selectedItemsList, expand, collapse, clearSelectedList };
   }
 });
 </script>
@@ -89,6 +110,8 @@ export default defineComponent({
 
   &--header {
     margin: 20px;
+    display: flex;
+    justify-content: space-between;
   }
 }
 </style>
