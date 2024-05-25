@@ -1,15 +1,20 @@
 <template>
   <div>
-    <h1>Hi!</h1>
     <div v-if="loading">
       <div>Loading...</div>
     </div>
-    <div v-else>
-      <div class="tree-actions">
-        <div class="tree-actions--item" @click="expand">Expand</div>
-        <div class="tree-actions--item" @click="collapse">Collapse</div>
+    <div v-else class="panel">
+      <div class="panel__left-side">
+        <div class="tree-actions">
+          <div class="tree-actions--item" @click="expand">Expand</div>
+          <div class="tree-actions--item" @click="collapse">Collapse</div>
+        </div>
+        <TreeList :items-data="treeList"/>
       </div>
-      <TreeList :items-data="itemsData"/>
+      <div class="panel__right-side">
+        <div class="list--header">Selected items:</div>
+        <ItemsList :items="selectedItemsList" />
+      </div>
     </div>
   </div>
 </template>
@@ -18,16 +23,17 @@
 import { computed, defineComponent, onMounted } from "vue";
 import { useStore } from 'vuex'
 import TreeList from "@/components/TreeList.vue";
+import ItemsList from "@/components/ItemsList.vue";
 
 export default defineComponent({
   name: 'App',
-  components: { TreeList },
+  components: { TreeList, ItemsList },
   setup() {
     const store = useStore();
 
     const loading = computed(() => store.state.loading);
-    const itemsData = computed(() => store.state.treeList);
-    const selectedItem = computed(() => store.state.selectedItem);
+    const treeList = computed(() => store.state.treeList);
+    const selectedItemsList = computed(() => store.state.selectedItemsList);
 
     onMounted(() => store.dispatch('getItemsList'));
 
@@ -39,7 +45,7 @@ export default defineComponent({
       await store.dispatch('updateFullBranch', { item: store.state.selectedItem, value: true });
     }
 
-    return { loading, itemsData, expand, collapse };
+    return { loading, treeList, selectedItemsList, expand, collapse };
   }
 });
 </script>
@@ -62,6 +68,27 @@ export default defineComponent({
     &:hover {
       text-decoration: underline;
     }
+  }
+}
+
+.panel {
+  display: grid;
+  height: calc(100vh - 100px);
+  margin: 50px;
+  border: 1px solid #9f9f9f;
+  border-radius: 10px;
+  grid-template-columns: 600px 1fr;
+
+  &__left-side {
+    overflow-y: auto;
+    border-right: 1px solid #9f9f9f;
+  }
+}
+
+.list {
+
+  &--header {
+    margin: 20px;
   }
 }
 </style>

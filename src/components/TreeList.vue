@@ -1,6 +1,6 @@
 <template>
   <div v-if="!!itemsData.length" class="tree-list">
-    <div v-for="(item, index) in itemsData" :key="`${item.id}`">
+    <div v-for="(item, index) in itemsData" :key="`tree-node${item.id}`">
       <div
           class="tree-list__item"
       >
@@ -63,6 +63,7 @@ export default defineComponent({
 
     function selectItem(item: TreeListItem) {
       store.commit('setSelectedItem', item);
+      store.commit('addSelectedItem', item);
     }
 
     function expandItem(item: TreeListItem) {

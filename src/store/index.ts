@@ -39,7 +39,7 @@ export default createStore<State>({
             state.selectedItem = item;
         },
         addSelectedItem (state: State, item: TreeListItem) {
-            if (!state.selectedItemsList.find(item => item.id === item.id)) {
+            if (!state.selectedItemsList.find(i => i.id === item.id)) {
                 state.selectedItemsList.push({
                     id: item.id,
                     name: item.name
