@@ -17,7 +17,6 @@ export interface TreeListItem {
     id: string;
     name: string;
     children: TreeListItem[];
-    isSelected: boolean;
     treeCollapsed: boolean;
 }
 

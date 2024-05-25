@@ -9,7 +9,6 @@ function processTreeNode(node: ItemsListResponseNode) : TreeListItem {
         id: node._nodeId,
         name: node._name,
         children: [],
-        isSelected: false,
         treeCollapsed: true
     }
     if (!node?.cat && !node?.leaf) return resultItem;
