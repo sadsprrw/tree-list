@@ -9,19 +9,19 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent} from 'vue'
-import {useStore} from "vuex";
+import { defineComponent, PropType } from 'vue'
+import { ListItem } from "@/common/types/types";
 
 export default defineComponent({
   name: 'ItemsList',
-  setup () {
-    const store = useStore();
-
-    const itemsData = computed(() => store.state.selectedItemsList);
-
-    return {
-      itemsData
+  props: {
+    itemsData: {
+      type: Object as PropType<Array<ListItem>>,
+      required: true
     }
+  },
+  setup (props) {
+
   }
 })
 </script>

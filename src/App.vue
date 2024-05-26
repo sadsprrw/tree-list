@@ -16,7 +16,7 @@
           Selected items:
           <div class="tree-actions--item" @click="clearSelectedList">Clear</div>
         </div>
-        <ItemsList :items="selectedItemsList" />
+        <ItemsList :items-data="selectedItemsList" />
       </div>
     </div>
   </div>

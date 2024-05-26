@@ -1,11 +1,7 @@
 <template>
   <div v-if="!!itemsData.length" class="tree-list">
     <div v-for="(item, index) in itemsData" :key="`tree-node${item.id}`">
-      <div
-          class="tree-list__item"
-          @click="selectItem(item)"
-          @dblclick="expandItem(item)"
-      >
+      <div class="tree-list__item">
         <svg
             class="tree-list__icon" viewBox="0 2 20 20"
             @click="processItem(item)"
@@ -18,6 +14,8 @@
             :id="index"
             class="tree-list__name"
             :class="selectedItem.id === item.id ? 'tree-list__name--selected' : ''"
+            @click="selectItem(item)"
+            @dblclick="expandItem(item)"
         >
           {{ item.name }}
         </div>
@@ -57,7 +55,6 @@ export default defineComponent({
     const selectedItem = computed(() => store.state.selectedItem);
 
     function processItem(item: TreeListItem) {
-      //store.dispatch('updateTreeElement', { id: item.id, attributes: { treeCollapsed: !item.treeCollapsed }});
       item.treeCollapsed = !item.treeCollapsed;
     }
 

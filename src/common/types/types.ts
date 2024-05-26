@@ -1,10 +1,10 @@
+
 export interface ItemsListResponseNode {
     cat?: ItemsListResponseNode | ItemsListResponseNode[],
     leaf?: ItemsListResponseNode[],
     "_nodeId": string,
     "_name": string
 }
-
 
 export interface ItemsListResponse {
     tree: {
