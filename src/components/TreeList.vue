@@ -3,6 +3,8 @@
     <div v-for="(item, index) in itemsData" :key="`tree-node${item.id}`">
       <div
           class="tree-list__item"
+          @click="selectItem(item)"
+          @dblclick="expandItem(item)"
       >
         <svg
             class="tree-list__icon" viewBox="0 2 20 20"
@@ -16,10 +18,8 @@
             :id="index"
             class="tree-list__name"
             :class="selectedItem.id === item.id ? 'tree-list__name--selected' : ''"
-            @click="selectItem(item)"
-            @dblclick="expandItem(item)"
         >
-          {{ item.name }}, {{item.id}}
+          {{ item.name }}
         </div>
       </div>
       <TreeList

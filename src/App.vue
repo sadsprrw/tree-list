@@ -104,6 +104,10 @@ export default defineComponent({
     overflow-y: auto;
     border-right: 1px solid #9f9f9f;
   }
+
+  &__right-side {
+    overflow-y: auto;
+  }
 }
 
 .list {
